@@ -18,7 +18,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'user_type'
+        'name', 'email', 'password', 'user_type', 'customer_id'
     ];
 
     /**
@@ -38,4 +38,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    
+    public function user_permissions(){
+        return $this->hasMany('App\UserPermission');
+    }
+
+    public function customer(){
+        return $this->belongsTo('App\Customer')->withTrashed();
+    }
 }

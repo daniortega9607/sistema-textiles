@@ -20,10 +20,16 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->tinyInteger('user_type')->default(1);
+            $table->integer('customer_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
         });
+
+        DB::table('entities')->insert([
+            'name' => 'users',
+            'is_general' => false
+        ]);
     }
 
     /**

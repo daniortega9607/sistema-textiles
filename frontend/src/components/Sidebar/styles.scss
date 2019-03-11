@@ -1,0 +1,37 @@
+#sidebar-wrapper {
+    position: absolute;
+    overflow-x: hidden;
+    overflow-y: auto;
+    left: -220px;
+    width: 220px;
+    top: 58px;
+    bottom: 0;
+    box-shadow: none;
+    transition: all 0.5s;
+    z-index: 9;
+    background: rgb(10, 100, 162);
+    .sidebar-component {
+        padding-top: 5px;
+        .nav-link {
+            cursor: pointer;
+            color: #fff;
+            border-bottom: 1px solid #eee;
+            &:hover,
+            &.active {
+                color: rgb(10, 100, 162);
+                background: #fff
+            }
+        }
+    }
+    &.show-sidebar {
+        left: 0px;
+        box-shadow: -2px 0px 2px 2px;
+    }
+}
+
+@media (max-width: 767px) {
+    #sidebar-wrapper {
+        left: -100%;
+        width: 100%;
+    }
+}
