@@ -20,6 +20,11 @@ class CreateUserPermissionsTable extends Migration
             $table->integer('editor_id');
             $table->timestamps();
         });
+
+        DB::table('entities')->insert([
+            'name' => 'user_permissions',
+            'is_general' => false
+        ]);
     }
 
     /**

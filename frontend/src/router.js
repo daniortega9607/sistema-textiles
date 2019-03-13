@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import App from './pages/App'
 import StockCreate from './pages/StockCreate'
 import StockDetails from './pages/StockDetails'
+//import StockMovements from './pages/StockMovements'
 import EntityList from './components/EntityList';
 import EntityCreate from './components/EntityCreate';
 import EntityDetails from './components/EntityDetails';
@@ -21,6 +22,11 @@ export const routes = [
       { path: '', component: DummyView },
       { path: '/home', component: DummyView, display_name: 'Inicio' },
       { path: '/almacen', redirect:'/almacen/lista', display_name: 'Almacen' },
+      { 
+        path: '/movimientos-almacen', 
+        redirect:'/movimientos-almacen/lista', 
+        display_name: 'Movimientos de Almacén',
+      },
       {
         path: '/gestion', component: RouterView, display_name: 'Gestion',
         children: [

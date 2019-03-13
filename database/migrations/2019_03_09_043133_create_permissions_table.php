@@ -18,6 +18,11 @@ class CreatePermissionsTable extends Migration
             $table->string('permission');
             $table->string('description');
         });
+
+        DB::table('entities')->insert([
+            'name' => 'permissions',
+            'is_general' => false
+        ]);
     }
 
     /**

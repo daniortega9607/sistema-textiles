@@ -21,8 +21,8 @@ export const Stock = {
   },
   fields: {
     id: { type: Number, is_primary: true, auto_generated: true, display_name: 'ID' },
-    office: { type: Object, display_name: 'Oficina' },
-    office_id: { type: Number, display_name: 'Oficina', render_type: 'custom', disableOnUpdate: true, renderer: SearchBoxList, props: { entity: 'offices' }, required: true },
+    office: { type: Object, display_name: 'Sucursal' },
+    office_id: { type: Number, display_name: 'Sucursal', render_type: 'custom', disableOnUpdate: true, renderer: SearchBoxList, props: { entity: 'offices' }, required: true },
     product: { type: Object, display_name: 'Modelo'},//, formatter: Product },
     product_id: { type: Number, display_name: 'Modelo', render_type: 'custom', disableOnUpdate: true, renderer: SearchBoxList, props: { entity: 'products' }, required: true },
     'product.fabric': { display_name:'Tela' },

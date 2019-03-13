@@ -7,9 +7,9 @@ import Supplier from "./supplier";
 import Customer from "./customer";
 import User from "./user";
 import Stock from "./stock";
-
+import StockMovement from "./stock_movement";
 export const Entities = {
-  Office, Color, Design, Fabric, Product, Supplier, Customer, User, Stock
+  Office, Color, Design, Fabric, Product, Supplier, Customer, User, Stock, StockMovement
 }
 
 export const MappedEntities = {
@@ -21,7 +21,8 @@ export const MappedEntities = {
   clientes: 'Customer',
   proveedores: 'Supplier',
   usuarios: 'User',
-  almacen: 'Stock'
+  almacen: 'Stock',
+  'movimientos-almacen': 'StockMovement'
 }
 
 export const getEntityInfo = (entity) => {

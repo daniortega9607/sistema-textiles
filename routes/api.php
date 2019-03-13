@@ -39,4 +39,5 @@ Route::group(['middleware' => ['api']], function() {
     Route::resource('/users', 'UserController');
     Route::resource('/stocks', 'StockController');
     Route::resource('/stock_details', 'StockDetailController');
+    Route::resource('/stock_movements', 'StockMovementController');
 });

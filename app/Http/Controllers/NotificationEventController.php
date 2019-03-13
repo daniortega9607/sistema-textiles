@@ -11,6 +11,7 @@ use App\Product;
 use App\Supplier;
 use App\Customer;
 use App\User;
+use App\StockMovement;
 use App\NotificationEvent;
 use Illuminate\Http\Request;
 
@@ -64,6 +65,8 @@ class NotificationEventController extends Controller
 						'suppliers' => Supplier::all(),
 						'users' => User::with(['customer'])->get(),
 						'stocks' => Stock::with(['office','product.fabric','product.color','product.design','stocks'])->get(),
+						'stock_movements' => StockMovement::with(['office','to_office'])->get(),
+						
 					];
 					echo "event: initValues\n";
 					echo "id: " . $latestEventId->id . "\n";
