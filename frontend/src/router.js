@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 import App from './pages/App'
 import StockCreate from './pages/StockCreate'
 import StockDetails from './pages/StockDetails'
-//import StockMovements from './pages/StockMovements'
+import StockMovementCreate from './pages/StockMovementCreate'
 import EntityList from './components/EntityList';
 import EntityCreate from './components/EntityCreate';
 import EntityDetails from './components/EntityDetails';
@@ -50,6 +50,7 @@ export const routes = [
         ]
       },*/
       { path: '/:entity/lista', component: EntityList },
+      { path: '/movimientos-almacen/lista/crear', component: StockMovementCreate },
       { path: '/almacen/lista/crear', component: StockCreate },
       { path: '/almacen/lista/:id', component: StockDetails },
       { path: '/:entity/lista/crear', component: EntityCreate },
