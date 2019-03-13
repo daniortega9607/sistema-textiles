@@ -1,6 +1,5 @@
 import SearchBoxList from "../../components/SearchBoxList";
-//import Product from "../formatters/Product";
-import ColorBox from "../formatters/ColorBox";
+import Product from "../formatters/Product";
 import Color from "../formatters/Color";
 
 export const Stock = {
@@ -24,7 +23,7 @@ export const Stock = {
     office: { type: Object, display_name: 'Sucursal' },
     office_id: { type: Number, display_name: 'Sucursal', render_type: 'custom', disableOnUpdate: true, renderer: SearchBoxList, props: { entity: 'offices' }, required: true },
     product: { type: Object, display_name: 'Modelo'},//, formatter: Product },
-    product_id: { type: Number, display_name: 'Modelo', render_type: 'custom', disableOnUpdate: true, renderer: SearchBoxList, props: { entity: 'products' }, required: true },
+    product_id: { type: Number, display_name: 'Modelo', render_type: 'custom', disableOnUpdate: true, renderer: SearchBoxList, props: { entity: 'products', customRenderer: Product }, required: true },
     'product.fabric': { display_name:'Tela' },
     'product.design': { display_name:'Diseño' },
     'product.color': { display_name:'Color', class:"text-center", formatter: Color },

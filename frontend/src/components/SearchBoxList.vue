@@ -17,7 +17,8 @@
           v-for="item in results"
           :key="'item-'+entity+'-'+item.id"
         >
-          <b>{{item.value}}</b>
+          <b v-if="!customRenderer">{{item.value}}</b>
+          <CustomRenderer v-else :value="item" :renderer="customRenderer"/>
         </div>
       </div>
     </div>
@@ -25,15 +26,18 @@
 </template>
 <script>
 import { fetch } from "../utils";
+import CustomRenderer from './CustomRenderer';
 
 export default {
+  components: { CustomRenderer },
   props: {
     id: { required: true },
     disabled: { default:false },
     entity: { required: true },
     required: { default: false },
     changeHandler: { required: true },
-    currentValue: { default: "" }
+    currentValue: { default: "" },
+    customRenderer: { default: null }
   },
   data() {
     return {
@@ -79,9 +83,6 @@ export default {
         params: { search }
       });
       if (!err) {
-        results.forEach(item => {
-          item.onClick = vm.selectItem;
-        });
         this.results = results;
       }
     }

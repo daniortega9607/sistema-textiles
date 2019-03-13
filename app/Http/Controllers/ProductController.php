@@ -33,7 +33,10 @@ class ProductController extends Controller
 
     public function search(Request $request)
     {
-        $query = Product::selectRaw('products.id, CONCAT(products.sku," ",fabrics.name," ",designs.name," ",colors.name," ") as value');
+        $query = Product::selectRaw('
+            products.id, CONCAT(products.sku," ",fabrics.name," ",designs.name," ",colors.name," ") as value,
+            color_id, fabric_id, design_id, sku
+        ')->with(['fabric','color','design']);
 
         $query->join('fabrics','fabrics.id','=','products.fabric_id');
         $query->leftJoin('colors','colors.id','=','products.color_id');
@@ -41,7 +44,8 @@ class ProductController extends Controller
         if(isset($request->id)){
             return response()->json($query->withTrashed()->find($request->id),200);
         }
-        $query->where('products.sku','like','%'.$request->search.'%')
+        $query->whereRaw('CONCAT(products.sku," ",fabrics.name," ",designs.name," ",colors.name," ") like "%'.$request->search.'%"')
+        ->orWhere('products.sku','like','%'.$request->search.'%')
         ->orWhere('fabrics.name','like','%'.$request->search.'%')
         ->orWhere('colors.name','like','%'.$request->search.'%')
         ->orWhere('designs.name','like','%'.$request->search.'%');
