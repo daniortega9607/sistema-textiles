@@ -28,7 +28,7 @@ const DataGrid = ({ props }) => {
             ? <tbody>
               {
                 props.items.map(item => (
-                  <tr class={`${props.deleting == item.id ? 'table-dark inactive':''}`}>
+                  <tr class={`${props.deleting == item.id ? 'table-dark inactive' : ''}`}>
                     {
                       props.field_configs.order.map(field => {
                         const title = getField(props.fields, field);
@@ -37,35 +37,47 @@ const DataGrid = ({ props }) => {
                         return (
                           <router-link
                             tag={props.fields[title].is_primary ? 'th' : 'td'}
-                            to={{ path: item.id.toString() }}
+                            to={!props.clickHandler ? { path: item.id.toString() }:''}
+                            onClick={props.clickHandler ? props.clickHandler : () => {}}
                             class={props.fields[title].class}
                             append
                           >
-                            { formatter
-                              ? <formatter value={getDataFromKey(item, field.split('.'))}/>
+                            {formatter
+                              ? <formatter value={getDataFromKey(item, field.split('.'))} />
                               : getDataFromKey(item, field.split('.'))
                             }
                           </router-link>
                         )
-                    })
+                      })
                     }
                     <td class="text-right">
                       <div class="btn-group">
                         {
+                          props.buttons
+                            ? props.buttons.map(buttonItem => (
+                              buttonItem.renderer
+                              ? <buttonItem.renderer {...{ props: {...buttonItem, selectedItems: props.selectedItems, item, extraParams:props.extraParams} }}/>
+                              : <button class={buttonItem.class} onClick={() => buttonItem.action(item, props.extraParams)}>
+                                  {buttonItem.label} {buttonItem.icon ? <i class={buttonItem.icon}></i> : null}
+                                </button>
+                            ))
+                            : null
+                        }
+                        {
                           props.showEditButton
                             ? <router-link to={{ path: item.id.toString() }} class="btn btn-primary btn-sm" append>
-                                <i class="fas fa-edit"></i>
-                              </router-link>
+                              <i class="fas fa-edit"></i>
+                            </router-link>
                             : null
                         }
                         {
                           props.showDeleteButton
-                            ? <button 
-                                class="btn btn-danger btn-sm" onClick={() => props.deleteHandler(item.id)}
-                                disabled={props.deleting == item.id}
-                              >
-                                <i class={`fas ${props.deleting == item.id ? 'fa-spinner fa-spin':'fa-trash'}`}></i>
-                              </button >
+                            ? <button
+                              class="btn btn-danger btn-sm" onClick={() => props.deleteHandler(item.id)}
+                              disabled={props.deleting == item.id}
+                            >
+                              <i class={`fas ${props.deleting == item.id ? 'fa-spinner fa-spin' : 'fa-trash'}`}></i>
+                            </button >
                             : null
                         }
                       </div>

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Stock;
+use App\StockDetail;
 use App\StockMovement;
 use App\NotificationEvent;
 use App\Entity;
@@ -41,6 +43,26 @@ class StockMovementController extends Controller
         $stockMovement['user_id'] = 1;//$request->user()->id;
 
         $item = StockMovement::create($stockMovement);
+
+        foreach ($request->stocks as $key => $value) {
+            $fromStockDetail = StockDetail::find($value['id']);
+            $stock = $fromStockDetail->stock;
+            $toStock = Stock::select('*')->where('office_id',$stockMovement['to_office_id'])
+            ->where('product_id',$stock['product_id'])->first();
+            if (is_null($toStock)) {
+                $toStock = Stock::create([
+                    'office_id' => $stockMovement['to_office_id'],
+                    'product_id' => $stock['product_id'],
+                    'stock' => 0
+                ]);
+            }
+            $fromStockDetail->stock_id = $toStock->id;
+            $fromStockDetail->save();
+            $stock->stock = $stock->stocks()->sum('remaining_quantity');
+            $stock->save();
+            $toStock->stock = $toStock->stocks()->sum('remaining_quantity');
+            $toStock->save();
+        }
 
         $now = date('Y-m-d h:i:s');
         NotificationEvent::insert([

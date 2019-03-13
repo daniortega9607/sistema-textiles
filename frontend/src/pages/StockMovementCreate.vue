@@ -17,19 +17,19 @@
         />
       </div>
     </div>
-    <div class="row">
-      <div
-        class="col-md-6"
-        v-if="entityItems({ entity: 'stocks', params:{ office: {id:item.office_id} } }).length"
-      >
-        <div class="card">
+    <div class="container-fluid">
+      <div class="row">
+        <div
+          class="card col-md-4"
+          v-if="entityItems({ entity: 'stocks', params:{ office: {id:item.office_id} } }).length"
+        >
           <div class="card-body">
             <div class="card-title">
-              <h2>
+              <h4>
                 Desde: {{
                 entityItems({ entity: 'stocks', params:{ office: {id:item.office_id} } })[0].office.name
                 }}
-              </h2>
+              </h4>
             </div>
             <SearchBox
               :changeHandler="value => debounceHandler('searchHandler', {key:'from_office_search', search:value})"
@@ -73,8 +73,19 @@
                         id: { display_name:'ID' },
                         remaining_quantity: { display_name:'Cantidad Restante (m)', class:'text-right' }
                       }"
+                      :selectedItems="selectedItems"
+                      :buttons="[
+                        {
+                          icon:'fas fa-arrow-right',
+                          class:'btn btn-success btn-sm',
+                          action:addStock,
+                          unSelect: removeStock,
+                          renderer: AddStockButton,
+                        }
+                      ]"
                       :field_configs="{ order:['id','remaining_quantity'] }"
                       :showDeleteButton="false"
+                      :extraParams="stock"
                     />
                   </div>
                 </div>
@@ -82,19 +93,36 @@
             </div>
           </div>
         </div>
-      </div>
-      <div
-        class="col-md-6"
-        v-if="entityItems({ entity: 'stocks', params:{ office: {id:item.to_office_id} } }).length"
-      >
-        <div class="card">
+        <div class="card col-md-4">
           <div class="card-body">
             <div class="card-title">
-              <h2>
+              <h4>Envios</h4>
+            </div>
+            <DataGrid
+              v-if="item.stocks.length"
+              :items="item.stocks"
+              :fields="{
+                id: { display_name:'ID' },
+                'product': { display_name:'Modelo', formatter: Product },
+                remaining_quantity: { display_name:'Cantidad (m)', class:'text-right' }
+              }"
+              :field_configs="{ order:['id','product','remaining_quantity'] }"
+              :showDeleteButton="true"
+              :deleteHandler="removeStock"
+            />
+          </div>
+        </div>
+        <div
+          class="card col-md-4"
+          v-if="entityItems({ entity: 'stocks', params:{ office: {id:item.to_office_id} } }).length"
+        >
+          <div class="card-body">
+            <div class="card-title">
+              <h4>
                 Hacia: {{
                 entityItems({ entity: 'stocks', params:{ office: {id:item.to_office_id} } })[0].office.name
                 }}
-              </h2>
+              </h4>
             </div>
             <SearchBox
               :changeHandler="value => debounceHandler('searchHandler', {key:'to_office_search', search:value})"
@@ -161,20 +189,49 @@ import DataGrid from "../components/DataGrid";
 import SearchBox from "../components/SearchBox";
 import Product from "../utils/formatters/Product";
 
+const AddStockButton = ({ props }) => {
+  return (
+    <button
+      class={
+        props.selectedItems && props.selectedItems.indexOf(props.item.id) != -1
+          ? "btn btn-danger btn-sm"
+          : props.class
+      }
+      onClick={() => {
+        props.selectedItems && props.selectedItems.indexOf(props.item.id) != -1
+          ? props.unSelect(props.item)
+          : props.action(props.item, props.extraParams);
+      }}
+    >
+      {props.selectedItems &&
+      props.selectedItems.indexOf(props.item.id) != -1 ? (
+        <i class="fas fa-arrow-left" />
+      ) : (
+        <div>
+          {props.label} {props.icon ? <i class={props.icon} /> : null}
+        </div>
+      )}
+    </button>
+  );
+};
+
 export default {
   components: { FormGenerator, DataGrid, Product, SearchBox },
   data() {
     return {
+      Product,
+      AddStockButton,
       is_saving: false,
       is_deleting: false,
       entity: null,
-      item: { office_id: null, to_office_id: null },
+      item: { office_id: null, to_office_id: null, stocks: [] },
       roll: {
         yd_quantity: null,
         quantity: null
       },
       from_office_search: null,
       to_office_search: null,
+      selectedItems: []
     };
   },
   created() {
@@ -185,10 +242,22 @@ export default {
     ...mapState("app", ["selectedOffice"])
   },
   methods: {
+    addStock(stock, item) {
+      this.item.stocks.push({ ...stock, product: item.product });
+      this.selectedItems.push(stock.id);
+    },
+    removeStock(stock) {
+      const index = this.selectedItems.indexOf(stock.id);
+      const stockIndex = this.item.stocks.findIndex(
+        item => item.id == stock.id
+      );
+      this.selectedItems.splice(index, 1);
+      this.item.stocks.splice(stockIndex, 1);
+    },
     debounceHandler: _.debounce(function(callback, options) {
       this[callback](options);
     }, 600),
-    searchHandler({key, search}) {
+    searchHandler({ key, search }) {
       this[key] = search;
     },
     async submitHandler() {
@@ -203,7 +272,7 @@ export default {
         console.log(err);
       } else {
         PNotify.success("Registro guardado con exito");
-        this.$router.replace(`/almacen/lista/${res.data.id}`);
+        this.$router.replace(`/movimientos-almacen/lista/${res.data.id}`);
       }
       this.is_saving = false;
     },
