@@ -28,6 +28,39 @@
         />
       </div>
     </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title">
+          <h2>Rollos</h2>
+          <FormGenerator
+            :item="{}"
+            :updatedItem="roll"
+            :fields="{
+              yd_quantity: { display_name:'Cantidad (yd)', render_type: 'number'},
+              quantity: { required:true, display_name:'Cantidad (m)', render_type: 'number' }
+            }"
+            :field_configs="{
+              order:['yd_quantity','quantity']
+            }"
+            :submitHandler="rollSubmitHandler"
+            :changeHandler="rollChangeHandler"
+            :hideCancel="true"
+          />
+          <DataGrid
+            v-if="entityItem({entity: entity.url, id: $route.params.id}).stocks.length"
+            :items="entityItem({entity: entity.url, id: $route.params.id}).stocks"
+            :fields="{
+              id: { display_name:'ID' },
+              quantity: { display_name:'Cantidad (m)', class:'text-right' },
+              remaining_quantity: { display_name:'Cantidad Restante (m)', class:'text-right' },
+            }"
+            :field_configs="{ order:['id','quantity','remaining_quantity'] }"
+            :showDeleteButton="true"
+            :deleteHandler="rollDeleteHandler"
+          />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -35,21 +68,49 @@ import { mapGetters, mapActions } from "vuex";
 import { getEntityInfo, isValidEntity } from "../utils/entities";
 import { fetch } from "../utils";
 import FormGenerator from "@/components/FormGenerator";
+import DataGrid from "../components/DataGrid";
+import NumberFormatter from '../utils/formatters/NumberFormatter';
 
 export default {
-  components: { FormGenerator },
+  components: { FormGenerator, DataGrid },
   data() {
     return {
       is_saving: false,
       is_deleting: false,
       entity: null,
-      item: {}
+      item: { stocks:[] },
+      roll: {
+        yd_quantity: null,
+        quantity: null
+      }
     };
   },
   created() {
     this.setEntity('almacen');
   },
   methods: {
+    async rollSubmitHandler() {
+      if (this.is_saving) return;
+      const quantity = NumberFormatter(this.roll.quantity);
+      this.is_saving = true;
+      let [err, res] = await fetch({
+        url: `/api/stock_details`,
+        data: { 
+          quantity, 
+          remaining_quantity: quantity,
+          stock_id:this.entityItem({entity: this.entity.url, id: this.$route.params.id}).id,
+        },
+        method: "post"
+      });
+      if (err) {
+        console.log(err);
+      } else {
+        PNotify.success("Registro guardado con exito");
+      }
+      this.is_saving = false;
+      this.roll.yd_quantity = null;
+      this.roll.quantity = null;
+    },
     async submitHandler() {
       if (this.is_saving) return;
       Object.keys(this.item).forEach(key =>
@@ -90,6 +151,18 @@ export default {
       }
       this.is_deleting = false;
     },
+    async rollDeleteHandler(id) {
+      if (this.is_deleting) return;
+      this.is_deleting = true;
+      let [err] = await fetch({
+        url: `/api/stock_details/${id}`,
+        method: "delete"
+      });
+      if (err) {
+        console.log(err);
+      }
+      this.is_deleting = false;
+    },
     changeHandler(field, value) {
       if (
         this.entityItem({ entity: this.entity.url, id: this.$route.params.id })[
@@ -100,6 +173,14 @@ export default {
       } else {
         delete this.item[field];
       }
+    },
+    rollChangeHandler(field, value) {
+      if (field == "yd_quantity") {
+        this.roll.quantity = value * 0.9144;
+      } else if (field == "quantity") {
+        this.roll.yd_quantity = value * 1.09361;
+      }
+      this.roll[field] = value;
     },
     setEntity(entity) {
       if (!isValidEntity(entity)) {

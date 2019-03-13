@@ -21,7 +21,7 @@ export const Color = {
   fields: {
     id: { type: Number, is_primary: true, auto_generated: true, display_name: 'ID' },
     name: { type: String, display_name: 'Nombre', required: true, render_type: 'text' },
-    value: { type: String, display_name: 'Color', default: '#000000', formatter: ColorBox, render_type: 'color' },
+    value: { type: String, display_name: 'Color', default: '#000000', formatter: ColorBox, render_type: 'color', class:"text-center" },
   }
 }
 

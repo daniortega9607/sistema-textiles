@@ -1,4 +1,4 @@
-import { getDataFromKey } from "../utils";
+import { getDataFromKey, getField } from "../utils";
 
 const DataGrid = ({ props }) => {
   return (
@@ -10,9 +10,10 @@ const DataGrid = ({ props }) => {
               <tr>
                 {
                   props.field_configs.order.map(field => {
+                    const title = getField(props.fields, field);
                     return (
-                      <th class={`no-wrap ${props.fields[field.split('.')[0]].class}`}>
-                        {props.fields[field.split('.')[0]].display_name}
+                      <th class={`no-wrap ${props.fields[title].class}`}>
+                        {props.fields[title].display_name}
                       </th>
                     )
                   })
@@ -30,13 +31,14 @@ const DataGrid = ({ props }) => {
                   <tr class={`${props.deleting == item.id ? 'table-dark inactive':''}`}>
                     {
                       props.field_configs.order.map(field => {
+                        const title = getField(props.fields, field);
                         let formatter;
-                        formatter = props.fields[field.split('.')[0]].formatter || null;
+                        formatter = props.fields[title].formatter || null;
                         return (
                           <router-link
-                            tag={props.fields[field.split('.')[0]].is_primary ? 'th' : 'td'}
+                            tag={props.fields[title].is_primary ? 'th' : 'td'}
                             to={{ path: item.id.toString() }}
-                            class={props.fields[field.split('.')[0]].class}
+                            class={props.fields[title].class}
                             append
                           >
                             { formatter

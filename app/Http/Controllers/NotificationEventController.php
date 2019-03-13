@@ -63,7 +63,7 @@ class NotificationEventController extends Controller
 						'customers' => Customer::all(),
 						'suppliers' => Supplier::all(),
 						'users' => User::with(['customer'])->get(),
-						'stocks' => Stock::with(['office','product.fabric','product.color','product.design'])->get(),
+						'stocks' => Stock::with(['office','product.fabric','product.color','product.design','stocks'])->get(),
 					];
 					echo "event: initValues\n";
 					echo "id: " . $latestEventId->id . "\n";

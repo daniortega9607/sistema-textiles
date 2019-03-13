@@ -40,7 +40,7 @@
             :items="item.stocks"
             :fields="{
               id: { display_name:'ID' },
-              quantity: { display_name:'Cantidad (m)' }
+              quantity: { display_name:'Cantidad (m)', class:'text-right' }
             }"
             :field_configs="{ order:['id','quantity'] }"
             :showDeleteButton="true"
@@ -52,7 +52,7 @@
   </div>
 </template>
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions, mapState } from "vuex";
 import { getEntityInfo, isValidEntity } from "../utils/entities";
 import { fetch } from "../utils";
 import FormGenerator from "@/components/FormGenerator";
@@ -66,7 +66,7 @@ export default {
       is_saving: false,
       is_deleting: false,
       entity: null,
-      item: { stocks: [], stock: null },
+      item: { stocks: [], stock: null, office_id:null },
       roll: {
         yd_quantity: null,
         quantity: null
@@ -75,6 +75,9 @@ export default {
   },
   created() {
     this.setEntity("almacen");
+  },
+  computed: {
+    ...mapState("app", ["selectedOffice"]),
   },
   methods: {
     rollSubmitHandler() {
@@ -100,7 +103,7 @@ export default {
         console.log(err);
       } else {
         PNotify.success("Registro guardado con exito");
-        this.$router.push(`/almacen/lista/${res.data.id}`);
+        this.$router.replace(`/almacen/lista/${res.data.id}`);
       }
       this.is_saving = false;
     },
@@ -141,6 +144,7 @@ export default {
         return this.$router.replace("/");
       }
       this.entity = getEntityInfo(entity);
+      this.item.office_id = this.selectedOffice.id;
     }
   }
 };

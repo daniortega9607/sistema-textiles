@@ -7,16 +7,20 @@ const state = {
 };
 
 const getters = {
-  entityItems: state => ({entity, params = { search: '' }}) => {
-    if (params.search) return filterData(state[entity], params.search, params.keys)
-    return state[entity];
+  entityItems: state => ({entity, params = { search: '', office: null }}) => {
+    let items = state[entity];
+    if (params.office && entity === 'stocks') {
+      items = items.filter(item => item.office_id == params.office.id);
+    }
+    if (params.search) return filterData(items, params.search, params.keys)
+    return items;
   },
   entityItem: state => ({entity, id}) => {
     return state[entity].find(item => item.id == id);
   }
 };
 const actions = {
-  async setNotifications({ state, commit }, notifications) {
+  async setNotifications({ commit }, notifications) {
     const improvePerformance = {};
     notifications.forEach(item => {
       if (!improvePerformance[item.entity_id]) {

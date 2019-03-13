@@ -38,8 +38,22 @@ export const setStateStorage = (state, newState) => {
   });
 }
 
-export const getDataFromKey = (data, keys) => {
+export const getField = (item, keys) => {
+  if(item[keys]) { return keys }
+  if(keys.indexOf('.') != -1) {
+    const lastIndex = keys.split('.').length;
+    let newKeys = keys.split('.');
+    newKeys.splice(lastIndex-1,1).join('.');
+    return getField(item, newKeys.join('.'))
+  }
+}
+
+export const getDataFromKey = (data, keys, initialKeys) => {
   let value = '';
+  if(initialKeys) {
+    const field = getField(data, initialKeys.join('.'))
+    if(field) return JSON.stringify(data[field]);
+  }
   const key = keys[0];
   if (typeof data[key] === 'object' && data[key] !== null && keys.length > 1) {
     const newKeys = keys.slice(1);
@@ -52,7 +66,7 @@ export const filterData = function (entities, search, keys) {
   var lowSearch = search.toLowerCase();
   return entities.filter(item => {
       return keys.some(key => key.indexOf('.') !== -1
-        ? String(getDataFromKey(item, key.split('.'))).toLowerCase().includes(lowSearch)
+        ? String(getDataFromKey(item, key.split('.'), key.split('.'))).toLowerCase().includes(lowSearch)
         : item[key] !== null ? String(item[key]).toLowerCase().includes(lowSearch) : false
       );
   });

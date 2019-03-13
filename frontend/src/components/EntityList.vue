@@ -16,7 +16,7 @@
             :search="params.search"
           />
           <DataGrid
-            :items="entityItems({ entity: entity.url, params })"
+            :items="entityItems({ entity: entity.url, params:{...params, office: selectedOffice} })"
             :fields="entity.fields"
             :field_configs="entity.field_configurations.list"
             :showEditButton="entity.field_configurations.list.showEditButton"
@@ -30,7 +30,7 @@
   </div>
 </template>
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions, mapState } from "vuex";
 import { getEntityInfo, isValidEntity } from "../utils/entities";
 import DataGrid from "./DataGrid";
 import SearchBox from "./SearchBox";
@@ -80,7 +80,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("entities", ["entityItems"])
+    ...mapGetters("entities", ["entityItems"]),
+    ...mapState("app", ["selectedOffice"]),
+
   },
   watch: {
     "$route.params.entity"(entity) {

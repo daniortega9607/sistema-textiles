@@ -11,7 +11,7 @@ class StockController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Stock::select('*')->with(['office','product.fabric','product.color','product.design']);
+        $query = Stock::select('*')->with(['office','product.fabric','product.color','product.design','stocks']);
         /*if (isset($request->search)) {
             $query->where('name','like','%'.$request->search.'%');
         }
@@ -35,15 +35,42 @@ class StockController extends Controller
 
     public function store(Request $request)
     {
-        $item = Stock::create($request->only([
-            'office_id','product_id','stock'
-        ]));
+        $stock = Stock::select('*')->where('office_id',$request->office_id)
+        ->where('product_id',$request->product_id)->first();
 
-        NotificationEvent::create([
-            'entity_id' => Entity::where('name','stocks')->first()->id,
-            'entity_value_id' => $item->id,
-            'type' => 1
-        ]);
+        $item = null;
+        if ($stock) {
+            $item = $stock;
+        } else {
+            $item = Stock::create($request->only([
+                'office_id','product_id','stock'
+            ]));
+        }
+
+        $stocks = $request->stocks;
+
+        if(count($stocks) > 0) {
+            foreach ($stocks as $key => $value) {
+                $stocks[$key]['user_id'] = 1;//$request->user()->id;
+            }
+            $item->stocks()->createMany($stocks);
+            $item->stock = $item->stocks()->sum('remaining_quantity');
+            $item->save();
+        }
+        
+        if ($stock) {
+            NotificationEvent::create([
+                'entity_id' => Entity::where('name','stocks')->first()->id,
+                'entity_value_id' => $item->id,
+                'type' => 3
+            ]);
+        } else {
+            NotificationEvent::create([
+                'entity_id' => Entity::where('name','stocks')->first()->id,
+                'entity_value_id' => $item->id,
+                'type' => 1
+            ]);
+        }
 
         return response()->json([
             'status' => (bool) $item,
@@ -55,7 +82,7 @@ class StockController extends Controller
     public function show(Stock $stock)
     {
         return response()->json($stock->with([
-            'office','product.fabric','product.color','product.design'
+            'office','product.fabric','product.color','product.design','stocks'
         ])->find($stock->id),200);         
     }
 

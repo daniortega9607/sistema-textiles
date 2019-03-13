@@ -38,4 +38,5 @@ Route::group(['middleware' => ['api']], function() {
     Route::get('/users/search', 'UserController@search');
     Route::resource('/users', 'UserController');
     Route::resource('/stocks', 'StockController');
+    Route::resource('/stock_details', 'StockDetailController');
 });

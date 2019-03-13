@@ -54,7 +54,7 @@ export default {
         console.log(err);
       } else {
         PNotify.success("Registro guardado con exito");
-        this.$router.push(`/${this.$route.params.entity}/lista/${res.data.id}`)
+        this.$router.replace(`/${this.$route.params.entity}/lista/${res.data.id}`)
       }
       this.is_saving = false;
     },

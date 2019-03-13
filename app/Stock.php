@@ -19,4 +19,9 @@ class Stock extends Model
     {
         return $this->belongsTo('App\Product')->withTrashed();
     }
+
+    public function stocks()
+    {
+        return $this->hasMany('App\StockDetail');
+    }
 }
