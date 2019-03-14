@@ -74,7 +74,7 @@ class StockMovementController extends Controller
 
         $now = date('Y-m-d h:i:s');
 
-        $users = User::where('user_type', '1')->where('id','!=',$request->user()->id)->get();
+        $users = User::where('user_type', '1')/*->where('id','!=',$request->user()->id)*/->get();
         $notifications = [];
 
         foreach ($users as $key => $value) {
