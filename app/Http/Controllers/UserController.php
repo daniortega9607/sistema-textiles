@@ -56,12 +56,12 @@ class UserController extends Controller
         $res = User::create($data);
 
         $permissions = $request->permissions;
-        if(count($permissions) ) {
+        /*if(count($permissions) ) {
             foreach ($permissions as $key => $value) {
                 $permissions[$key]['editor_id'] = $res->id;
             }
             $res->user_permissions()->createMany($permissions);
-        }
+        }*/
 
         NotificationEvent::create([
             'entity_id' => Entity::where('name','users')->first()->id,
