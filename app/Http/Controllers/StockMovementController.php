@@ -86,6 +86,7 @@ class StockMovementController extends Controller
                 'user_id' => $value['id']
             ];
         }
+        return $notifications;
         if(count($notifications) > 0) {
             Notification::insert($notifications);
         }
