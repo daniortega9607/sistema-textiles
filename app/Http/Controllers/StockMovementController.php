@@ -74,7 +74,7 @@ class StockMovementController extends Controller
 
         $now = date('Y-m-d h:i:s');
 
-        $users = User::where('user_type', '1')/*->where('id','!=',$request->user()->id)*/->get();
+        $users = User::where('user_type', 1)->where('id','!=',$request->user()->id)->get();
         $notifications = [];
 
         foreach ($users as $key => $value) {
@@ -86,7 +86,6 @@ class StockMovementController extends Controller
                 'user_id' => $value['id']
             ];
         }
-        return $users;
         if(count($notifications) > 0) {
             Notification::insert($notifications);
         }
