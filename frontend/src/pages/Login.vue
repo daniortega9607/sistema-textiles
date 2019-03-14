@@ -89,6 +89,8 @@ export default {
       const user = login.user;
       const token = login.token;
       if (token) {
+        window.axios.defaults.headers.common['Content-Type'] = 'application/json'
+        window.axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
         this.login({ user, token, callback: this.redirectToHome });
       }
     },
