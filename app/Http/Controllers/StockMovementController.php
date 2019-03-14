@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Stock;
 use App\StockDetail;
 use App\StockMovement;
+use App\Notification;
 use App\NotificationEvent;
 use App\Entity;
+use App\User;
 use Illuminate\Http\Request;
 
 class StockMovementController extends Controller
@@ -40,7 +42,7 @@ class StockMovementController extends Controller
         $stockMovement = $request->only([
             'office_id','to_office_id','balance','total','status'
         ]);
-        $stockMovement['user_id'] = 1;//$request->user()->id;
+        $stockMovement['user_id'] = $request->user()->id;
 
         $item = StockMovement::create($stockMovement);
 
@@ -71,6 +73,23 @@ class StockMovementController extends Controller
         }
 
         $now = date('Y-m-d h:i:s');
+
+        $users = User::where('user_type', 1)->where('id','!=',$request->user()->id)->get();
+        $notifications = [];
+
+        foreach ($users as $key => $value) {
+            $notifications[] = [
+                'entity_id' => Entity::where('name','stock_movements')->first()->id,
+                'entity_value_id' => $item->id,
+                'created_at' => $now,
+                'message' => $request->user()->name.' ha creado un movimiento de almacen',
+                'user_id' => $value['id']
+            ];
+        }
+        if(count($notifications) > 0) {
+            Notification::insert($notifications);
+        }
+
         NotificationEvent::insert([
             [
                 'entity_id' => Entity::where('name','stock_movements')->first()->id,
@@ -85,9 +104,17 @@ class StockMovementController extends Controller
                 'created_at' => $now,
                 'updated_at' => $now,
                 'type' => 2
+            ],
+            [
+                'entity_id' => Entity::where('name','notifications')->first()->id,
+                'entity_value_id' => NULL,
+                'created_at' => $now,
+                'updated_at' => $now,
+                'type' => 2
             ]
         ]);
 
+        
         return response()->json([
             'status' => (bool) $item,
             'data'   => $item,

@@ -14,7 +14,7 @@ class StockDetailController extends Controller
         $stockDetail = $request->only([
             'stock_id','quantity','remaining_quantity'
         ]);
-        $stockDetail['user_id'] = 1;//$request->user()->id;
+        $stockDetail['user_id'] = $request->user()->id;
 
         $item = StockDetail::create($stockDetail);
 

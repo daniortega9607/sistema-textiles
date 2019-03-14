@@ -46,7 +46,7 @@ export default {
       this.logout({ callback: this.redirectToLogin });
     },
     setupStream() {
-      notifications = new EventSource(`/api/notification_events/subscribe?${this.last_event_id ? 'last_event_id='+this.last_event_id : ''}`);
+      notifications = new EventSource(`/api/notification_events/subscribe?user_id=${this.user.id}&${this.last_event_id ? 'last_event_id='+this.last_event_id : ''}`);
       notifications.addEventListener("open", event => {
         if(retries !== 3) {
           retries = 3;

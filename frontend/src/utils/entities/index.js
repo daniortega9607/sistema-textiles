@@ -8,8 +8,10 @@ import Customer from "./customer";
 import User from "./user";
 import Stock from "./stock";
 import StockMovement from "./stock_movement";
+import Notification from "./notification";
+
 export const Entities = {
-  Office, Color, Design, Fabric, Product, Supplier, Customer, User, Stock, StockMovement
+  Office, Color, Design, Fabric, Product, Supplier, Customer, User, Stock, StockMovement, Notification
 }
 
 export const MappedEntities = {
@@ -22,7 +24,21 @@ export const MappedEntities = {
   proveedores: 'Supplier',
   usuarios: 'User',
   almacen: 'Stock',
-  'movimientos-almacen': 'StockMovement'
+  'movimientos-almacen': 'StockMovement',
+  notificaciones: 'Notification',
+}
+
+export const getMappedKeyEntity = (url) => {
+  let entityInfo;
+  Object.keys(Entities).forEach(entity => {
+    if (Entities[entity].url == url) {
+      entityInfo = Entities[entity];
+    }
+  })
+  Object.keys(MappedEntities).forEach(item => {
+    if(MappedEntities[item] == entityInfo.name) entityInfo = item;
+  })
+  return entityInfo;
 }
 
 export const getEntityInfo = (entity) => {

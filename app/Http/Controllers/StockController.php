@@ -51,7 +51,7 @@ class StockController extends Controller
 
         if(count($stocks) > 0) {
             foreach ($stocks as $key => $value) {
-                $stocks[$key]['user_id'] = 1;//$request->user()->id;
+                $stocks[$key]['user_id'] = $request->user()->id;
             }
             $item->stocks()->createMany($stocks);
             $item->stock = $item->stocks()->sum('remaining_quantity');

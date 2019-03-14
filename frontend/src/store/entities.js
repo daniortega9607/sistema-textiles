@@ -17,6 +17,9 @@ const getters = {
   },
   entityItem: state => ({entity, id}) => {
     return state[entity].find(item => item.id == id);
+  },
+  getNotifications: state => () => {
+    return state.notifications.filter(item => item.status == 1);
   }
 };
 const actions = {

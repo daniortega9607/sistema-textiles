@@ -12,6 +12,7 @@ use App\Supplier;
 use App\Customer;
 use App\User;
 use App\StockMovement;
+use App\Notification;
 use App\NotificationEvent;
 use Illuminate\Http\Request;
 
@@ -42,6 +43,8 @@ class NotificationEventController extends Controller
 		echo ":" . str_repeat(" ", 2048) . "\n"; // 2 kB padding for IE
 		echo "retry: 5000\n";
 
+		$user = User::find($request->user_id);
+
 		// start stream
 		while(true){
 
@@ -61,6 +64,7 @@ class NotificationEventController extends Controller
 						'designs' => Design::all(),
 						'fabrics' => Fabric::all(),
 						'products' => Product::with(['fabric','color','design'])->get(),
+						'notifications' => Notification::with(['entity'])->where('user_id',$user->id)->get(),
 						'customers' => Customer::all(),
 						'suppliers' => Supplier::all(),
 						'users' => User::with(['customer'])->get(),

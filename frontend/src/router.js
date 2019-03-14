@@ -22,6 +22,7 @@ export const routes = [
     children: [
       { path: '', component: DummyView },
       { path: '/home', component: DummyView, display_name: 'Inicio' },
+      { path: '/notificaciones', redirect:'/notificaciones/lista', display_name: 'Notificaciones' },
       { path: '/almacen', redirect:'/almacen/lista', display_name: 'Almacen' },
       { 
         path: '/movimientos-almacen', 

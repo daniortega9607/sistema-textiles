@@ -19,8 +19,9 @@ use Illuminate\Http\Request;
 
 Route::post('login', 'UserController@login');
 
-Route::group(['middleware' => ['api']], function() {
-    Route::get('/notification_events/subscribe', 'NotificationEventController@subscribe');
+Route::get('/notification_events/subscribe', 'NotificationEventController@subscribe');
+
+Route::group(['middleware' => ['api','auth:api']], function() {
     Route::get('/offices/search', 'OfficeController@search');
     Route::resource('/offices', 'OfficeController');
     Route::get('/colors/search', 'ColorController@search');
@@ -41,4 +42,5 @@ Route::group(['middleware' => ['api']], function() {
     Route::resource('/stock_details', 'StockDetailController');
     Route::resource('/stock_movements', 'StockMovementController');
     Route::resource('/stock_movement_details', 'StockMovementDetailController');
+    Route::resource('/notifications', 'NotificationController');
 });
