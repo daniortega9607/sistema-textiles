@@ -44,24 +44,30 @@ class StockMovementController extends Controller
 
         $item = StockMovement::create($stockMovement);
 
-        foreach ($request->stocks as $key => $value) {
-            $fromStockDetail = StockDetail::find($value['id']);
-            $stock = $fromStockDetail->stock;
-            $toStock = Stock::select('*')->where('office_id',$stockMovement['to_office_id'])
-            ->where('product_id',$stock['product_id'])->first();
-            if (is_null($toStock)) {
-                $toStock = Stock::create([
-                    'office_id' => $stockMovement['to_office_id'],
-                    'product_id' => $stock['product_id'],
-                    'stock' => 0
-                ]);
+        $stocks = $request->stocks;
+
+        if(count($stocks) > 0) {
+            foreach ($stocks as $key => $value) {
+                $stocks[$key]['stock_detail_id'] = $value['id'];
+                $fromStockDetail = StockDetail::find($value['id']);
+                $stock = $fromStockDetail->stock;
+                $toStock = Stock::select('*')->where('office_id',$stockMovement['to_office_id'])
+                ->where('product_id',$stock['product_id'])->first();
+                if (is_null($toStock)) {
+                    $toStock = Stock::create([
+                        'office_id' => $stockMovement['to_office_id'],
+                        'product_id' => $stock['product_id'],
+                        'stock' => 0
+                    ]);
+                }
+                $fromStockDetail->stock_id = $toStock->id;
+                $fromStockDetail->save();
+                $stock->stock = $stock->stocks()->sum('remaining_quantity');
+                $stock->save();
+                $toStock->stock = $toStock->stocks()->sum('remaining_quantity');
+                $toStock->save();
             }
-            $fromStockDetail->stock_id = $toStock->id;
-            $fromStockDetail->save();
-            $stock->stock = $stock->stocks()->sum('remaining_quantity');
-            $stock->save();
-            $toStock->stock = $toStock->stocks()->sum('remaining_quantity');
-            $toStock->save();
+            $item->stocks()->createMany($stocks);
         }
 
         $now = date('Y-m-d h:i:s');
@@ -92,7 +98,10 @@ class StockMovementController extends Controller
     public function show(StockMovement $stockMovement)
     {
         return response()->json($stockMovement->with([
-            'office','to_office'
+            'office','to_office',
+            'stocks.stockDetail.stock.product.fabric',
+			'stocks.stockDetail.stock.product.design',
+			'stocks.stockDetail.stock.product.color'
         ])->find($stockMovement->id),200);         
     }
 
@@ -100,9 +109,40 @@ class StockMovementController extends Controller
     {
         $status = $stockMovement->delete();
 
-        NotificationEvent::create([
-            'entity_id' => Entity::where('name','stocks')->first()->id,
-            'type' => 2
+        foreach ($stockMovement->stocks as $key => $stockMovementDetail) {
+            $fromStock = $stockMovementDetail->stockDetail->stock;
+            $toStock = Stock::select('*')->where('office_id',$stockMovementDetail->stockMovement['office_id'])
+            ->where('product_id',$fromStock['product_id'])->first();
+            $stockMovementDetail->stockDetail->stock_id = $toStock['id'];
+            $stockMovementDetail->stockDetail->save();
+
+            $fromStock->stock = $fromStock->stocks()->sum('remaining_quantity');
+            $fromStock->save();
+            $toStock->stock = $toStock->stocks()->sum('remaining_quantity');
+            $toStock->save();
+
+            $status = $stockMovementDetail->delete();
+        }
+
+        
+
+
+        $now = date('Y-m-d h:i:s');
+        NotificationEvent::insert([
+            [
+                'entity_id' => Entity::where('name','stock_movements')->first()->id,
+                'entity_value_id' => $stockMovement->id,
+                'created_at' => $now,
+                'updated_at' => $now,
+                'type' => 4
+            ],
+            [
+                'entity_id' => Entity::where('name','stocks')->first()->id,
+                'entity_value_id' => NULL,
+                'created_at' => $now,
+                'updated_at' => $now,
+                'type' => 2
+            ]
         ]);
 
         return response()->json([

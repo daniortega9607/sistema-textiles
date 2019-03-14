@@ -65,7 +65,12 @@ class NotificationEventController extends Controller
 						'suppliers' => Supplier::all(),
 						'users' => User::with(['customer'])->get(),
 						'stocks' => Stock::with(['office','product.fabric','product.color','product.design','stocks'])->get(),
-						'stock_movements' => StockMovement::with(['office','to_office'])->get(),
+						'stock_movements' => StockMovement::with([
+							'office','to_office',
+							'stocks.stockDetail.stock.product.fabric',
+							'stocks.stockDetail.stock.product.design',
+							'stocks.stockDetail.stock.product.color'
+						])->orderBy('created_at','desc')->get(),
 						
 					];
 					echo "event: initValues\n";

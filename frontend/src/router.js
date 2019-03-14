@@ -4,6 +4,7 @@ import App from './pages/App'
 import StockCreate from './pages/StockCreate'
 import StockDetails from './pages/StockDetails'
 import StockMovementCreate from './pages/StockMovementCreate'
+import StockMovementDetails from './pages/StockMovementDetails'
 import EntityList from './components/EntityList';
 import EntityCreate from './components/EntityCreate';
 import EntityDetails from './components/EntityDetails';
@@ -51,6 +52,7 @@ export const routes = [
       },*/
       { path: '/:entity/lista', component: EntityList },
       { path: '/movimientos-almacen/lista/crear', component: StockMovementCreate },
+      { path: '/movimientos-almacen/lista/:id', component: StockMovementDetails },
       { path: '/almacen/lista/crear', component: StockCreate },
       { path: '/almacen/lista/:id', component: StockDetails },
       { path: '/:entity/lista/crear', component: EntityCreate },

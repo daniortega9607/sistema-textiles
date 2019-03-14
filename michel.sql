@@ -16,35 +16,29 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `stock_movements`
+-- Table structure for table `stock_movement_details`
 --
 
-DROP TABLE IF EXISTS `stock_movements`;
+DROP TABLE IF EXISTS `stock_movement_details`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `stock_movements` (
+CREATE TABLE `stock_movement_details` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `office_id` int(10) unsigned NOT NULL,
-  `to_office_id` int(10) unsigned NOT NULL,
-  `balance` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `total` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `status` tinyint(4) NOT NULL DEFAULT '2',
-  `user_id` int(10) unsigned NOT NULL,
+  `stock_movement_id` int(10) unsigned NOT NULL,
+  `stock_detail_id` int(10) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `stock_movements`
+-- Dumping data for table `stock_movement_details`
 --
 
-LOCK TABLES `stock_movements` WRITE;
-/*!40000 ALTER TABLE `stock_movements` DISABLE KEYS */;
-INSERT INTO `stock_movements` VALUES (1,29,31,0.00,0.00,2,1,'2019-03-13 06:16:06','2019-03-13 06:16:06',NULL);
-/*!40000 ALTER TABLE `stock_movements` ENABLE KEYS */;
+LOCK TABLES `stock_movement_details` WRITE;
+/*!40000 ALTER TABLE `stock_movement_details` DISABLE KEYS */;
+/*!40000 ALTER TABLE `stock_movement_details` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -56,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-03-13  0:17:36
+-- Dump completed on 2019-03-13 18:09:25

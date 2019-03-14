@@ -40,4 +40,5 @@ Route::group(['middleware' => ['api']], function() {
     Route::resource('/stocks', 'StockController');
     Route::resource('/stock_details', 'StockDetailController');
     Route::resource('/stock_movements', 'StockMovementController');
+    Route::resource('/stock_movement_details', 'StockMovementDetailController');
 });

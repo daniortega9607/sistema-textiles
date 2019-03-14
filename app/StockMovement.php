@@ -10,7 +10,7 @@ class StockMovement extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'office_id','to_office_id','balance','total','status','user_id'
+        'office_id','to_office_id','balance','total','status','user_id', 'stocks'
     ];
 
     public function office()
@@ -26,5 +26,10 @@ class StockMovement extends Model
     public function user()
     {
         return $this->belongsTo('App\User')->withTrashed();
+    }
+
+    public function stocks()
+    {
+        return $this->hasMany('App\StockMovementDetail');
     }
 }
